@@ -55,11 +55,11 @@ test.post('/send', auth, upload.single('project'), async (req, res) => {
     await exec(`a2ensite ${projectName}`);
     await exec(`systemctl reload apache2`);
 
-    console.log(chalk.dim(`=== /\\/\\/\\/\\/\\ ===`));
-    console.log(chalk.green(`New project created in ${projectName}`));
-    console.log(chalk.dim(`=== /\\/\\/\\/\\/\\ ===`));
+    console.log(`=== /\\/\\/\\/\\/\\ ===`);
+    console.log(`New project created in ${projectName}`);
+    console.log(`=== /\\/\\/\\/\\/\\ ===`);
 
-    await exec(`rm -r /var/www/cli/uploads/${fileName}`);
+    await exec(`rm -r ${process.cwd()}/uploads/${fileName}.zip`);
 
     return res.status(200).send({m: 'sent!'});
   }
