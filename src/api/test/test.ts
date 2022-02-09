@@ -7,6 +7,8 @@ const exec = util.promisify(cp.exec);
 
 import * as fsp from 'fs/promises';
 
+import chalk from 'chalk';
+
 import * as dotenv from 'dotenv';
 import {stub} from "../../stubs/virtualhost";
 dotenv.config();
@@ -37,8 +39,8 @@ test.post('/send', auth, upload.single('project'), async (req, res) => {
   const {stderr, stdout} = await exec(`unzip -o ${process.cwd()}/uploads/${fileName} -d /var/www/statics/${projectName} -x ${fileName}`);
   if (stderr) {
     return res.status(400).send({stderr: stderr})
-
   }
+
   // TODO: check for an already existent VirtualHost file to replace in case of updating an existing project
   if (stdout) {
 
@@ -52,6 +54,12 @@ test.post('/send', auth, upload.single('project'), async (req, res) => {
     await fsp.writeFile(`/etc/apache2/sites-available/${projectName}.conf`, newVH);
     await exec(`a2ensite ${projectName}`);
     await exec(`systemctl reload apache2`);
+
+    console.log(chalk.dim(`=== /\\/\\/\\/\\/\\ ===`));
+    console.log(chalk.green(`New project created in ${projectName}`));
+    console.log(chalk.dim(`=== /\\/\\/\\/\\/\\ ===`));
+
+    await exec(`rm -r /var/www/cli/uploads/${fileName}`);
 
     return res.status(200).send({m: 'sent!'});
   }
