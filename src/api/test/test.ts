@@ -19,6 +19,8 @@ test.get('/send', (req, res) => {
 });
 
 test.post('/send', auth, upload.single('project'), async (req, res) => {
+  console.log('some request came through....');
+
   if (!req.file) {
     res.status(401).send({m: 'error'});
     throw('No File sent.');
