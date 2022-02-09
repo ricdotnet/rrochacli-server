@@ -21,29 +21,30 @@ test.get('/send', (req, res) => {
 
 test.post('/send', auth, upload.single('project'), async (req, res) => {
   console.log('some request came through....');
+  const projectName = req.body['project-name'];
 
   if (!req.file) {
     res.status(401).send({m: 'error'});
     throw('No File sent.');
   }
   const fileName = req.file!.originalname;
-  const folderName = req.file!.originalname.split('.')[0];
 
-  await exec(`mkdir /var/www/statics/${folderName}`);
+  // const folderName = req.file!.originalname.split('.')[0];
+  await exec(`mkdir /var/www/statics/${projectName}`);
   // await exec(`cp ${process.cwd()}/uploads/${fileName} /var/www/statics/${folderName}`);
-  const {stderr, stdout} = await exec(`unzip -o ${process.cwd()}/uploads/${fileName} -d /var/www/statics/${folderName} -x ${fileName}`);
 
-  if (stderr)
+  const {stderr, stdout} = await exec(`unzip -o ${process.cwd()}/uploads/${fileName} -d /var/www/statics/${projectName} -x ${fileName}`);
+  if (stderr) {
     return res.status(400).send({stderr: stderr})
 
+  }
   // TODO: check for an already existent VirtualHost file to replace in case of updating an existing project
   if (stdout) {
-    const projectName = req.body['project-name'];
 
     const data = {
       '{--server-name--}': `${projectName}`,
       '{--server-alias--}': `${projectName}`,
-      '{--folder-name--}': `${folderName}`,
+      '{--folder-name--}': `${projectName}`,
     };
 
     const newVH = stub(data);
