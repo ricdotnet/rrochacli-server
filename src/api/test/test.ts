@@ -41,9 +41,9 @@ test.post('/send', auth, upload.single('project'), async (req, res) => {
   // }
 
   const data = {
-    '{--server-name--}': 'some name',
-    '{--server-alias--}': 'some alias',
-    '{--folder-name--}': 'some folder'
+    '{--server-name--}': `${req.body['project-name']}`,
+    '{--server-alias--}': `${req.body['project-name']}`,
+    '{--folder-name--}': `${folderName}`,
   }
 
   console.log(stub(data));
