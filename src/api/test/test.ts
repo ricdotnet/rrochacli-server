@@ -24,8 +24,8 @@ test.post('/send', auth, upload.single('project'), async (req, res) => {
   const projectName = req.body['project-name'];
 
   if (!req.file) {
-    res.status(401).send({m: 'error'});
-    throw('No File sent.');
+    return res.status(401).send({m: 'no file was sent.'});
+    // throw('No File sent.');
   }
   const fileName = req.file!.originalname;
 
