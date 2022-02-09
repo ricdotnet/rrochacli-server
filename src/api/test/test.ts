@@ -36,7 +36,8 @@ test.post('/send', auth, upload.single('project'), async (req, res) => {
   await exec(`mkdir /var/www/statics/${projectName}`);
   // await exec(`cp ${process.cwd()}/uploads/${fileName} /var/www/statics/${folderName}`);
 
-  const {stderr, stdout} = await exec(`unzip -o ${process.cwd()}/uploads/${fileName} -d /var/www/statics/${projectName} -x ${fileName}`);
+  // TODO: Check for the same zip file inside and if there is then set the -x flag
+  const {stderr, stdout} = await exec(`unzip -o ${process.cwd()}/uploads/${fileName} -d /var/www/statics/${projectName}`);
   if (stderr) {
     return res.status(400).send({stderr: stderr})
   }
@@ -59,7 +60,7 @@ test.post('/send', auth, upload.single('project'), async (req, res) => {
     console.log(`New project created in ${projectName}`);
     console.log(`=== /\\/\\/\\/\\/\\ ===`);
 
-    await exec(`rm -r ${process.cwd()}/uploads/${fileName}.zip`);
+    await exec(`rm -r ${process.cwd()}/uploads/${fileName}`);
 
     return res.status(200).send({m: 'sent!'});
   }
