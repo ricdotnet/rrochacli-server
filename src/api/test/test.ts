@@ -30,7 +30,7 @@ test.post('/send', auth, upload.single('project'), async (req, res) => {
 
   await exec(`mkdir /var/www/statics/${folderName}`);
   // await exec(`cp ${process.cwd()}/uploads/${fileName} /var/www/statics/${folderName}`);
-  const {stderr, stdout} = await exec(`unzip -o ${process.cwd()}/uploads/${fileName} -d /var/www/static/${folderName} -x ${fileName}`);
+  const {stderr, stdout} = await exec(`unzip -o ${process.cwd()}/uploads/${fileName} -d /var/www/statics/${folderName} -x ${fileName}`);
 
   if (stderr)
     res.status(400).send({stderr: stderr})
