@@ -8,6 +8,7 @@ const exec = util.promisify(cp.exec);
 import * as fs from 'fs/promises';
 
 import * as dotenv from 'dotenv';
+import {stub} from "../../stubs/virtualhost";
 dotenv.config();
 
 const upload = multer({storage});
@@ -28,14 +29,25 @@ test.post('/send', auth, upload.single('project'), async (req, res) => {
   const fileName = req.file!.originalname;
   const folderName = req.file!.originalname.split('.')[0];
 
-  await exec(`mkdir /var/www/statics/${folderName}`);
-  // await exec(`cp ${process.cwd()}/uploads/${fileName} /var/www/statics/${folderName}`);
-  const {stderr, stdout} = await exec(`unzip -o ${process.cwd()}/uploads/${fileName} -d /var/www/statics/${folderName} -x ${fileName}`);
+  // await exec(`mkdir /var/www/statics/${folderName}`);
+  // // await exec(`cp ${process.cwd()}/uploads/${fileName} /var/www/statics/${folderName}`);
+  // const {stderr, stdout} = await exec(`unzip -o ${process.cwd()}/uploads/${fileName} -d /var/www/statics/${folderName} -x ${fileName}`);
+  //
+  // if (stderr)
+  //   res.status(400).send({stderr: stderr})
+  //
+  // if (stdout) {
+  //
+  // }
 
-  if (stderr)
-    res.status(400).send({stderr: stderr})
+  const data = {
+    '{--server-name--}': 'some name',
+    '{--server-alias--}': 'some alias',
+    '{--folder-name--}': 'some folder'
+  }
 
-  if (stdout)
+  console.log(stub(data));
+
     res.status(200).send({m: 'sent!'});
 });
 
