@@ -5,7 +5,7 @@ import * as util from 'util';
 import * as cp from 'child_process';
 const exec = util.promisify(cp.exec);
 
-import * as fs from 'fs/promises';
+import * as fsp from 'fs/promises';
 
 import * as dotenv from 'dotenv';
 import {stub} from "../../stubs/virtualhost";
@@ -29,24 +29,28 @@ test.post('/send', auth, upload.single('project'), async (req, res) => {
   const fileName = req.file!.originalname;
   const folderName = req.file!.originalname.split('.')[0];
 
-  // await exec(`mkdir /var/www/statics/${folderName}`);
-  // // await exec(`cp ${process.cwd()}/uploads/${fileName} /var/www/statics/${folderName}`);
-  // const {stderr, stdout} = await exec(`unzip -o ${process.cwd()}/uploads/${fileName} -d /var/www/statics/${folderName} -x ${fileName}`);
-  //
-  // if (stderr)
-  //   res.status(400).send({stderr: stderr})
-  //
-  // if (stdout) {
-  //
-  // }
+  await exec(`mkdir /var/www/statics/${folderName}`);
+  // await exec(`cp ${process.cwd()}/uploads/${fileName} /var/www/statics/${folderName}`);
+  const {stderr, stdout} = await exec(`unzip -o ${process.cwd()}/uploads/${fileName} -d /var/www/statics/${folderName} -x ${fileName}`);
 
-  const data = {
-    '{--server-name--}': `${req.body['project-name']}`,
-    '{--server-alias--}': `${req.body['project-name']}`,
-    '{--folder-name--}': `${folderName}`,
+  if (stderr)
+    res.status(400).send({stderr: stderr})
+
+  // TODO: check for an already existent VirtualHost file to replace in case of updating an existing project
+  if (stdout) {
+    const projectName = req.body['project-name'];
+
+    const data = {
+      '{--server-name--}': `${projectName}`,
+      '{--server-alias--}': `${projectName}`,
+      '{--folder-name--}': `${folderName}`,
+    };
+
+    const newVH = stub(data);
+    await fsp.writeFile(`/etc/apache2/sites-available/${projectName}.conf`, newVH);
+    await exec(`a2ensite ${projectName}`);
+    await exec(`systemctl reload apache2`);
   }
-
-  console.log(stub(data));
 
     res.status(200).send({m: 'sent!'});
 });
