@@ -50,9 +50,9 @@ test.post('/send', auth, upload.single('project'), async (req, res) => {
     await fsp.writeFile(`/etc/apache2/sites-available/${projectName}.conf`, newVH);
     await exec(`a2ensite ${projectName}`);
     await exec(`systemctl reload apache2`);
-  }
 
     res.status(200).send({m: 'sent!'});
+  }
 });
 
 // temp auth
