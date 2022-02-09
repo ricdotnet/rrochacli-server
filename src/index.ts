@@ -18,7 +18,7 @@ const app = express();
 //   next();
 // });
 
-app.use(express.json());
+app.use(express.json({limit: 26214400}));
 app.use(cors());
 app.use('/', api);
 
