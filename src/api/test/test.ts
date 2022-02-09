@@ -34,7 +34,7 @@ test.post('/send', auth, upload.single('project'), async (req, res) => {
   const {stderr, stdout} = await exec(`unzip -o ${process.cwd()}/uploads/${fileName} -d /var/www/statics/${folderName} -x ${fileName}`);
 
   if (stderr)
-    res.status(400).send({stderr: stderr})
+    return res.status(400).send({stderr: stderr})
 
   // TODO: check for an already existent VirtualHost file to replace in case of updating an existing project
   if (stdout) {
@@ -51,7 +51,7 @@ test.post('/send', auth, upload.single('project'), async (req, res) => {
     await exec(`a2ensite ${projectName}`);
     await exec(`systemctl reload apache2`);
 
-    res.status(200).send({m: 'sent!'});
+    return res.status(200).send({m: 'sent!'});
   }
 });
 
