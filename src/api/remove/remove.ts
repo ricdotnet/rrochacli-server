@@ -25,10 +25,15 @@ remove.delete('/remove', auth, async (req: Request, res: Response) => {
 
     // lastly remove disabled-by-admin files
     await fs.rm(`/var/lib/apache2/site/disabled_by_admin/${app}`);
+
+    // after all steps complete restart apache
+    await sh('systemctl reload apache2');
   } catch (e) {
     console.log(e);
     return res.status(400).send({ e });
   }
 
-  res.end();
+  res.status(200).send({
+    m: `${app} was successfully deleted!`
+  });
 });
