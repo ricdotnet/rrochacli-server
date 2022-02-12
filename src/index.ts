@@ -1,6 +1,7 @@
 import express from 'express';
-import {api} from "./api";
+import { api } from './api';
 import cors from 'cors';
+import { RequestContext } from './middlewares/request';
 
 const app = express();
 
@@ -18,10 +19,15 @@ const app = express();
 //   next();
 // });
 
-app.use(express.json({limit: 26214400}));
+app.use(express.json({ limit: 26214400 }));
 app.use(cors());
+
+app.use('/', (req, res, next) => {
+  new RequestContext(req);
+  next();
+});
 app.use('/', api);
 
 app.listen(2999, () => {
-  console.log('server on');
+  console.log('server listening on port 2999');
 });
