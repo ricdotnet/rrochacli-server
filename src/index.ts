@@ -2,6 +2,8 @@ import express from 'express';
 import { api } from './api';
 import cors from 'cors';
 import { RequestContext } from './middlewares/request';
+import { RegisterRoutes } from '@ricdotnet/decorators';
+import {auth} from "./middlewares/auth";
 
 const app = express();
 
@@ -22,11 +24,12 @@ const app = express();
 app.use(express.json({ limit: 26214400 }));
 app.use(cors());
 
-app.use('/', (req, res, next) => {
+app.use('/', auth, (req, res, next) => {
   new RequestContext(req);
   next();
 });
-app.use('/', api);
+new RegisterRoutes(app, 'src/controllers');
+// app.use('/', api);
 
 app.listen(2999, () => {
   console.log('server listening on port 2999');
